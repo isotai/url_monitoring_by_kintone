@@ -1,0 +1,28 @@
+{
+  "name": "http_monitoring_by_kintone",
+  "version": "1.0.0",
+  "description": "",
+  "build": "webpack",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isotai/http_monitoring_by_kintone.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/isotai/http_monitoring_by_kintone/issues"
+  },
+  "homepage": "https://github.com/isotai/http_monitoring_by_kintone#readme",
+  "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "babel-loader": "^8.1.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
+  }
+}
