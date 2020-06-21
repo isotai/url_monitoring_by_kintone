@@ -12,11 +12,10 @@ export function fetchResources() {
       "int__threshold_",
     ],
   };
-  var re ;
   return kintone.api(kintone.api.url("/k/v1/records", true), "GET", body).then(
-    function (resp) {
+    function (response) {
       //  TODO コンストラクーでresponseの値を分解するように変更する
-      re = resp["records"].map(
+      return response["records"].map(
         (r) =>
           new Resource(
             r["id"]["value"],
@@ -26,7 +25,6 @@ export function fetchResources() {
             r["int__threshold_"]["value"]
           )
       );
-      return re
     },
     function (error) {
       console.log(error);
