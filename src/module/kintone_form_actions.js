@@ -1,6 +1,11 @@
+import { fetchResources } from "./resorce_check";
 export const createShow = () => {
   kintone.events.on("app.record.create.show", function (e) {
     window.alert("レコード追加画面を開きました");
+    // const resources = fetchResources();
+    //  window.alert(resources);
+    // resources.forEach((r) => r.checkURL());
+
     e = changeThresholdDisabled(e);
     return e;
   });
@@ -11,7 +16,7 @@ export const createShow = () => {
   // アラート有効時のみしきい値の入力を有効にする
   const changeThresholdDisabled = (e) => {
     e.record["int__threshold_"].disabled =
-      e.record["radio__alert_"].value == "する" ? false : true;
+      e.record["radio__should_alert_"].value == "する" ? false : true;
     return e;
   };
 };
