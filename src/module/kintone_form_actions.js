@@ -2,14 +2,17 @@ import { fetchResources } from "./resorce_check";
 export const createShow = () => {
   kintone.events.on("app.record.create.show", function (e) {
     window.alert("レコード追加画面を開きました");
-    // const resources = fetchResources();
-    //  window.alert(resources);
-    // resources.forEach((r) => r.checkURL());
+
+    fetchResources().then((resources) => {
+      resources.forEach((r) => { r.checkURL(); });
+    });
 
     e = changeThresholdDisabled(e);
     return e;
   });
-  kintone.events.on("app.record.create.change.radio__should_alert_", function (e) {
+  kintone.events.on("app.record.create.change.radio__should_alert_", function (
+    e
+  ) {
     e = changeThresholdDisabled(e);
     return e;
   });
@@ -36,10 +39,8 @@ export const createAfterSave = () => {
       kintone.api.url("/k/v1/record", true),
       "POST",
       params,
-      function (resp) {
-      },
-      function (resp) {
-      }
+      function (resp) {},
+      function (resp) {}
     );
   });
 };

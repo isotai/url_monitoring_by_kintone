@@ -1,4 +1,4 @@
-export const fetchResources = () => {
+export function fetchResources() {
   const body = {
     app: 1,
     //  TODO: クエリでもshould_monitorで絞り混みする
@@ -12,13 +12,11 @@ export const fetchResources = () => {
       "int__threshold_",
     ],
   };
-  kintone.api(
-    kintone.api.url("/k/v1/records", true),
-    "GET",
-    body,
+  var re ;
+  return kintone.api(kintone.api.url("/k/v1/records", true), "GET", body).then(
     function (resp) {
       //  TODO コンストラクーでresponseの値を分解するように変更する
-      resp["records"].map(
+      re = resp["records"].map(
         (r) =>
           new Resource(
             r["id"]["value"],
@@ -28,12 +26,13 @@ export const fetchResources = () => {
             r["int__threshold_"]["value"]
           )
       );
+      return re
     },
     function (error) {
       console.log(error);
     }
-  );
-};
+  )
+}
 
 
 // TODO: 別ファイルに移動する
@@ -47,19 +46,19 @@ class Resource {
   }
   checkURL() {
     kintone.proxy(
-      url,
+      this.url,
       "GET",
       {},
       {},
       function (body, status, headers) {
         // success
-        console.log(status, JSON.parse(body), headers);
       },
       function (error) {
         // error
         console.log(error); // proxy APIのレスポンスボディ(文字列)を表示
       }
     );
+    console.log('check')
   }
   _parseResponse() {}
 }
