@@ -1,21 +1,14 @@
 export class MonitoringResult {
   constructor() {}
-  _save(resources, status, result) {
+  _save(resource, status, result) {
+    // const records = _createRecordParams(check_result);
+    const param = _createRecordParams(resource, status, result)
     const params = {
-      app: 2, // url_monitoring_result
-      record: {
-        int__resource_id_: {
-          value: resources.id,
-        },
-        string__response_status_: {
-          value: status,
-        },
-        radio__result_: {
-          value: result,
-        },
-      },
-    };
-    kintone.api(
+      "app": "2",
+      "record": param,
+    }
+    console.log(params)
+    return kintone.api(
       kintone.api.url("/k/v1/record", true),
       "POST",
       params,
@@ -24,3 +17,29 @@ export class MonitoringResult {
     );
   }
 }
+
+const _createRecordParams = (resource, status, result) => {
+  const param = {
+    int__resource_id_: {
+      value: resource.id
+    },
+    string__response_status_: {
+      value: status
+    },
+    radio__result_: {
+      value: result
+    }
+  }
+  // check_result.map(result => ({
+  //   int__resource_id_: {
+  //     value: result['id'],
+  //   },
+  //   string__response_status_: {
+  //     value: result['status'],
+  //   },
+  //   radio__result_: {
+  //     value: result['result'],
+  //   },
+  // }))
+  return param
+};

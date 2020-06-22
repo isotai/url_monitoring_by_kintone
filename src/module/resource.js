@@ -33,6 +33,7 @@ export class Resource {
     return kintone.api(kintone.api.url("/k/v1/records", true), "GET", body).then(
       function (response) {
         //  TODO コンストラクーでresponseの値を分解するように変更する
+        console.log('fetch')
         return response["records"].map(
           (r) =>
           new Resource(
@@ -43,10 +44,9 @@ export class Resource {
             r["int__threshold_"]["value"]
           )
         );
-      },
-      function (error) {
-        console.log(error);
       }
-    );
+    ).catch(function (error) {
+      console.log(error);
+    });
   }
 }
