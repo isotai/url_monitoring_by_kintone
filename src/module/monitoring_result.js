@@ -1,7 +1,6 @@
 export class MonitoringResult {
   constructor() {}
-
-  _saveCheckResult(resources, status, result) {
+  _save(resources, status, result) {
     const params = {
       app: 2, // url_monitoring_result
       record: {
