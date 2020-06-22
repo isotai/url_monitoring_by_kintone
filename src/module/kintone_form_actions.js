@@ -1,5 +1,6 @@
-import {fetchResources} from "./resorce_check";
-import {saveCheckResult} from "./monitoring_result";
+import { fetchResources } from "./resorce_check";
+import { saveCheckResult } from "./monitoring_result";
+import { createAram } from "./monitoring_alarm";
 
 export const createShow = () => {
   kintone.events.on("app.record.create.show", function (e) {
@@ -7,11 +8,13 @@ export const createShow = () => {
 
     fetchResources().then((resources) => {
       resources.map((r) => {
-        r.checkURL().then((status) => {
-          const result = status == "200" ? "ok" : "ng";
-          // 一括で保存するように変更する
-          saveCheckResult(r.id, status, result);
-        });
+        if (r.should_monitor == "する") {
+          r.checkURL().then((status) => {
+            const result = status == "200" ? "ok" : "ng";
+            // 一括で保存するように変更する
+            saveCheckResult(r.id, status, result);
+          });
+        }
       });
     });
 
@@ -34,27 +37,6 @@ export const createShow = () => {
 
 export const createAfterSave = () => {
   kintone.events.on("app.record.create.submit.success", function (e) {
-    const recordId = e.recordId;
-    const params = {
-      app: 3, // url_monitoring_alarm
-      record: {
-        int___resource_id_: {
-          value: recordId
-        },
-        int__counter_: {
-          value: 0
-        },
-        int__alert_history_: {
-          value: 0
-        },
-      },
-    };
-    kintone.api(
-      kintone.api.url("/k/v1/record", true),
-      "POST",
-      params,
-      function (resp) {},
-      function (resp) {}
-    );
+    createAram(e.recordId);
   });
 };
