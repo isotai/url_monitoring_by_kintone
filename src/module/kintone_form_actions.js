@@ -1,6 +1,6 @@
 import { fetchResources } from "./resorce_check";
-import { saveCheckResult } from "./monitoring_result";
-import { createAram } from "./monitoring_alarm";
+import { MonitoringResult } from "./monitoring_result";
+import { MonitoringAlarm } from "./monitoring_alarm";
 
 export const createShow = () => {
   kintone.events.on("app.record.create.show", function (e) {
@@ -11,8 +11,9 @@ export const createShow = () => {
         if (r.should_monitor == "する") {
           r.checkURL().then((status) => {
             const result = status == "200" ? "ok" : "ng";
-            // 一括で保存するように変更する
-            saveCheckResult(r.id, status, result);
+            // TODO: 一括で保存するように変更する
+            new MonitoringResult()._saveCheckResult(r, status, result);
+            // incrementCounter(r, result);
           });
         }
       });
@@ -37,6 +38,6 @@ export const createShow = () => {
 
 export const createAfterSave = () => {
   kintone.events.on("app.record.create.submit.success", function (e) {
-    createAram(e.recordId);
+    new MonitoringAlarm()._createAram(e.recordId);
   });
 };
