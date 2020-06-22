@@ -4,7 +4,13 @@ export const createShow = () => {
     window.alert("レコード追加画面を開きました");
 
     fetchResources().then((resources) => {
-      resources.forEach((r) => { r.checkURL(); });
+      resources.map((r) => {
+        r.checkURL().then((status) => {
+          const result = status == "200" ? "ok" : "ng";
+          // 一括で保存するように変更する
+          saveCheckResult(r.id, status, result);
+        });
+      });
     });
 
     e = changeThresholdDisabled(e);
@@ -21,6 +27,25 @@ export const createShow = () => {
     e.record["int__threshold_"].disabled =
       e.record["radio__should_alert_"].value == "する" ? false : true;
     return e;
+  };
+
+  const saveCheckResult = (id, status, result) => {
+    const params = {
+      app: 2, // url_monitoring_result
+      record: {
+        int__resource_id_: { value: id },
+        string__response_status_: { value: status },
+        radio__result_: { value: result },
+      },
+    };
+    console.log(params);
+    kintone.api(
+      kintone.api.url("/k/v1/record", true),
+      "POST",
+      params,
+      function (resp) {},
+      function (resp) {}
+    );
   };
 };
 

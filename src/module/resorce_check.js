@@ -29,9 +29,8 @@ export function fetchResources() {
     function (error) {
       console.log(error);
     }
-  )
+  );
 }
-
 
 // TODO: 別ファイルに移動する
 class Resource {
@@ -43,20 +42,14 @@ class Resource {
     this.threshold = threshold;
   }
   checkURL() {
-    kintone.proxy(
-      this.url,
-      "GET",
-      {},
-      {},
+    return kintone.proxy(this.url, "GET", {}, {}).then(
       function (body, status, headers) {
-        // success
+        return body[1];
       },
       function (error) {
         // error
-        console.log(error); // proxy APIのレスポンスボディ(文字列)を表示
+        console.log(error);
       }
     );
-    console.log('check')
   }
-  _parseResponse() {}
 }
