@@ -1,4 +1,6 @@
-import { fetchResources } from "./resorce_check";
+import {fetchResources} from "./resorce_check";
+import {saveCheckResult} from "./monitoring_result";
+
 export const createShow = () => {
   kintone.events.on("app.record.create.show", function (e) {
     window.alert("レコード追加画面を開きました");
@@ -28,25 +30,6 @@ export const createShow = () => {
       e.record["radio__should_alert_"].value == "する" ? false : true;
     return e;
   };
-
-  const saveCheckResult = (id, status, result) => {
-    const params = {
-      app: 2, // url_monitoring_result
-      record: {
-        int__resource_id_: { value: id },
-        string__response_status_: { value: status },
-        radio__result_: { value: result },
-      },
-    };
-    console.log(params);
-    kintone.api(
-      kintone.api.url("/k/v1/record", true),
-      "POST",
-      params,
-      function (resp) {},
-      function (resp) {}
-    );
-  };
 };
 
 export const createAfterSave = () => {
@@ -55,9 +38,15 @@ export const createAfterSave = () => {
     const params = {
       app: 3, // url_monitoring_alarm
       record: {
-        int___resource_id_: { value: recordId },
-        int__counter_: { value: 0 },
-        int__alert_history_: { value: 0 },
+        int___resource_id_: {
+          value: recordId
+        },
+        int__counter_: {
+          value: 0
+        },
+        int__alert_history_: {
+          value: 0
+        },
       },
     };
     kintone.api(
