@@ -12,22 +12,29 @@ export const createShow = () => {
   kintone.events.on("app.record.create.show", function (e) {
     window.alert("レコード追加画面を開きました");
 
-    new Resource()._fetch().then((resources) => {
-      resources.forEach((resource) => {
-        if (resource.should_monitor == "しない") {
-          return
-        }
-        resource.checkURL().then((status) => {
-          console.log('checkurl')
-          const result = status == "200" ? "ok" : "ng";
-          // TODO: レコードは一括登録したいが、L17_fetchのpromiseに対してthenすると、
-          // checkURLよりも先に実行されてしまうので修正する
-          return new MonitoringResult()._save(resource, status, result);
-        }).then(function () {
-          new MonitoringAlarm()._incrementCounter(resource)
-        })
-      });
-    })
+    // TODO: レコードは一括登録したいが、L17_fetchのpromiseに対してthenすると、
+    // checkURLよりも先に実行されてしまうので修正する
+    new Resource()._fetchAllShouldMonitor()
+      .then((resources) => {
+        resources.forEach((resource) => {
+          resource.checkURL()
+            .then((status) => {
+              const result = status == "200" ? "ok" : "ng";
+              return new MonitoringResult()._save(resource, status, result);
+            }).then(function () {
+              const alarm = new MonitoringAlarm()._fetchByResourceId(resource.id)
+              console.log(`alarm: ${alarm}`)
+              return alarm
+            }).then(function (monitoring_alarm) {
+              if (monitoring_alarm === null || monitoring_alarm === undefined) {
+                throw new Error("record not defined");
+              }
+              monitoring_alarm.incrementCounter();
+            }).catch(function (error) {
+              console.log(error)
+            })
+        });
+      })
     e = changeThresholdDisabled(e);
     return e;
   });

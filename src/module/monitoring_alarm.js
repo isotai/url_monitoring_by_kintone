@@ -1,6 +1,9 @@
 export class MonitoringAlarm {
-  constructor() {}
-
+  constructor(id, resource_id, counter) {
+    this.id = id,
+      this.resource_id = resource_id,
+      this.counter = counter
+  };
   _createAram(resource_id) {
     const params = {
       app: 3, // url_monitoring_alarm
@@ -25,44 +28,43 @@ export class MonitoringAlarm {
     );
   }
   // TODO:インスタンス作ってから呼ぶようにして、レコード更新許可メソッド通ってから更新するように変更する
-  _incrementCounter(resource) {
-    const body = {
-      app: 3,
-      int___resource_id_: resource.id,
-      fields: ["radio__should_alert_"],
-    };
+
+  _fetchByResourceId(resource_id) {
     return kintone
       .api(kintone.api.url("/k/v1/records", true), "GET", {
         app: 3,
-        query: `int___resource_id_ = ${resource.id}`,
+        query: `int___resource_id_ = ${resource_id}`,
         fields: ["int__counter_", "int___resource_id_", "id"],
-      })
-      .then(function (r) {
-        const response = r["records"][0];
-        console.log(r);
+      }).then(function (response) {
+        response = response['records'][0]
         if (response === null || response === undefined) {
-          return;
+          throw new Error("record not defined");
         }
-        let incremented_counter = (parseInt(response["int__counter_"].value) + 1);
-        return kintone.api(
-          kintone.api.url("/k/v1/record", true),
-          "PUT",
-          {
-            app: 3, // url_monitoring_alarm
-            id: response["id"].value,
-            int___resource_id_: response["int___resource_id_"].value,
-            record: {
-              int__counter_: {
-                value: incremented_counter,
-              },
-            },
-          },
-          function (resp) {},
-          function (resp) {}
-        );
+        return new MonitoringAlarm(
+          response["id"]["value"],
+          response["int___resource_id_"]["value"],
+          response["int__counter_"]["value"],
+        )
+      }).catch(function (error) {
+        console.log(error)
       })
-      .catch(function (resp) {
-        console.log(resp);
-      });
+  }
+  incrementCounter() {
+    let incremented_counter = (parseInt(this.counter) + 1);
+    return kintone.api(
+      kintone.api.url("/k/v1/record", true),
+      "PUT", {
+        app: 3, // url_monitoring_alarm
+        id: this.id,
+        int___resource_id_: this.resource_id,
+        record: {
+          int__counter_: {
+            value: incremented_counter,
+          },
+        },
+      },
+      function (resp) {},
+      function (resp) {}
+    )
   }
 }

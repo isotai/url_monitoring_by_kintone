@@ -16,12 +16,12 @@ export class Resource {
         console.log(error)
       })
   }
-  _fetch() {
+  _fetchAllShouldMonitor() {
     const body = {
       app: 1,
       //  TODO: クエリでもshould_monitorで絞り混みする
-      // query: 'radio__should_monitor_ == "する"  limit 100',
-      fields: [
+      'query': 'radio__should_monitor_ in ("する")',
+      'fields': [
         // TODO: Resourceクラスの定数にする
         "id",
         "string__url_",
