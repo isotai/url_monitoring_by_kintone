@@ -67,4 +67,13 @@ export class MonitoringAlarm {
       function (resp) {}
     )
   }
+  alert(resource) {
+    if (resource.radio__should_alert_ == 'しない') {
+      return
+    };
+    if (resource.threshold >= this.counter) {
+      console.log('alert!')
+      console.log('reset counter!')
+    }
+  }
 }
