@@ -7,7 +7,6 @@ export class MonitoringResult {
       "app": "2",
       "record": param,
     }
-    console.log(params)
     return kintone.api(
       kintone.api.url("/k/v1/record", true),
       "POST",
