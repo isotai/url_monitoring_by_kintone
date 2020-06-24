@@ -75,5 +75,6 @@ export class MonitoringAlarm {
       console.log('alert!')
       console.log('reset counter!')
     }
+    // counter　のリセット
   }
 }

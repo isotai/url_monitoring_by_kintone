@@ -34,7 +34,7 @@ kintone.events.on('app.record.index.show', function (event) {
             }
             monitoring_alarm.incrementCounter();
             if (resource.radio__should_alert_ == 'する') {
-              monitoring_alarm.alert(resource)
+              // monitoring_alarm.alert(resource)
             }
           }).catch(function (error) {
             console.log(error)
