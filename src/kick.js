@@ -15,31 +15,24 @@ from "./module/monitoring_alarm";
 kintone.events.on('app.record.index.show', function (event) {
   new Resource()._fetchAllShouldMonitor()
     .then((resources) => {
-      resources.forEach((resource) => {
-        let result
-        resource.checkURL()
-          .then((status) => {
-            result = status == "200" ? "ok" : "ng";
-            let monitoring_result = new MonitoringResult()._save(resource, status, result);
-            if (result == 'ok') {
-              // エラーで抜けるの気持ち悪い... 一括でレコード処理するように変更すれば成功したレコードは事前に抜いておけるはず。
-              throw new Error('suspend flow')
-            }
-            return monitoring_result
-          }).then(function () {
-            return new MonitoringAlarm()._fetchByResourceId(resource.id)
-          }).then(function (monitoring_alarm) {
-            if (monitoring_alarm === null || monitoring_alarm === undefined) {
-              throw new Error("record not defined!!");
-            }
-            monitoring_alarm.incrementCounter();
-            if (resource.radio__should_alert_ == 'する') {
-              // monitoring_alarm.alert(resource)
-            }
-          }).catch(function (error) {
-            console.log(error)
-          })
-      });
+      const results = new Resource()._checkURLs(resources)
+      return Promise.all(results)
+    }).then((resp) => {
+      resp.map((r) => {
+        r['checked_result'] = r['status'] == "200" ? "ok" : "ng";
+      })
+      return new MonitoringResult()._save(resp)
+    }).then((resp) => {
+      return new MonitoringResult()._fetchByIds(resp['ids'])
+    }).then((resp) => {
+      const resource_ids = resp.filter(r => r.result === 'ng').map(r => {
+        return r.resource_id
+      })
+      return new MonitoringAlarm()._fetchByResourceIds(resource_ids)
+    }).then((resp) => {
+      return new MonitoringAlarm()._incrementCounters(resp);
+    }).then((resp) => {
+      // アラート
     })
   return event;
 });
