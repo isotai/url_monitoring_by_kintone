@@ -72,6 +72,7 @@ export class MonitoringAlarm {
       console.log('alert!')
       console.log('reset counter!')
     }
+    // counter　のリセット
   }
 }
 const _createRecordParams = (monitoring_alarms) => {

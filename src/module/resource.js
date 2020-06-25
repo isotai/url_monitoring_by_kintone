@@ -29,7 +29,6 @@ export class Resource {
   _fetchAllShouldMonitor() {
     const body = {
       app: 1,
-      //  TODO: クエリでもshould_monitorで絞り混みする
       'query': 'radio__should_monitor_ in ("する")',
       'fields': [
         // TODO: Resourceクラスの定数にする
