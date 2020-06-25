@@ -6,11 +6,21 @@ export class Resource {
     this.should_alert = should_alert;
     this.threshold = threshold;
   }
+  _checkURLs(resources) {
+    return resources.map((r) => {
+      return r.checkURL()
+    })
+  }
+
   checkURL() {
+    const id = this.id
     return kintone.proxy(this.url, "GET", {}, {})
       .then(
         function (body, status, headers) {
-          return body[1];
+          return {
+            id: id,
+            status: body[1]
+          }
         }
       ).catch(function (error) {
         console.log(error)

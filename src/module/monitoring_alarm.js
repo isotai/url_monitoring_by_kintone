@@ -29,43 +29,40 @@ export class MonitoringAlarm {
   }
   // TODO:インスタンス作ってから呼ぶようにして、レコード更新許可メソッド通ってから更新するように変更する
 
-  _fetchByResourceId(resource_id) {
+  _fetchByResourceIds(resource_ids) {
     return kintone
       .api(kintone.api.url("/k/v1/records", true), "GET", {
         app: 3,
-        query: `int___resource_id_ = ${resource_id}`,
+        query: `int___resource_id_ in (${resource_ids})`,
         fields: ["int__counter_", "int___resource_id_", "id"],
       }).then(function (response) {
-        response = response['records'][0]
-        if (response === null || response === undefined) {
-          throw new Error("record not defined");
-        }
-        return new MonitoringAlarm(
-          response["id"]["value"],
-          response["int___resource_id_"]["value"],
-          response["int__counter_"]["value"],
-        )
+        return response["records"].map((r) => {
+          if (r.length === 0) {
+            throw new Error("record not defined");
+          }
+          return new MonitoringAlarm(
+            r["id"]["value"],
+            r["int___resource_id_"]["value"],
+            r["int__counter_"]["value"],
+          )
+        });
       }).catch(function (error) {
         console.log(error)
       })
   }
-  incrementCounter() {
-    let incremented_counter = (parseInt(this.counter) + 1);
+  _incrementCounters(monitoring_alarms) {
+    const records = _createRecordParams(monitoring_alarms)
+    const body = {
+      "app": "3",
+      "records": records,
+    }
     return kintone.api(
-      kintone.api.url("/k/v1/record", true),
-      "PUT", {
-        app: 3, // url_monitoring_alarm
-        id: this.id,
-        int___resource_id_: this.resource_id,
-        record: {
-          int__counter_: {
-            value: incremented_counter,
-          },
-        },
-      },
-      function (resp) {},
-      function (resp) {}
-    )
+      kintone.api.url("/k/v1/records", true),
+      "PUT",
+      body
+    ).catch((error) => {
+      console.log(error)
+    });
   }
   alert(resource) {
     if (resource.radio__should_alert_ == 'しない') {
@@ -77,3 +74,16 @@ export class MonitoringAlarm {
     }
   }
 }
+const _createRecordParams = (monitoring_alarms) => {
+  return monitoring_alarms.map((ma) => {
+    const incremented_counter = (parseInt(ma.counter) + 1);
+    return {
+      "id": ma.id,
+      'record': {
+        "int__counter_": {
+          "value": incremented_counter
+        }
+      },
+    }
+  })
+};
