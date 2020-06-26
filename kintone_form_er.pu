@@ -1,0 +1,32 @@
+package "kintone_form" as target_system {
+  entity "url_monitoring_resource" as resource {
+      id [PK]
+      対象url
+      アラート
+      しきい値(連続失敗回数)
+      監視
+  }
+
+  entity "url_monitoring_result" as result  {
+          id [PK]
+          resource_id[FK]
+          result
+          response_status
+          更新日時
+      }
+
+  entity "url_monitoring_alarm" as alarm {
+      id [PK]
+      resource_id [FK]
+      counter
+      alert_history
+  }
+
+  entity "[開くの禁止]monitoring_定期実行用" as [開くの禁止]monitoring_定期実行用 {
+  }
+
+  resource       ----o{    result
+  resource       ----||    alarm
+  result       ----||    resource
+  alarm       ----||    resource
+}

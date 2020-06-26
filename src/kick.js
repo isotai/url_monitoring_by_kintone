@@ -30,6 +30,7 @@ kintone.events.on('app.record.index.show', function (event) {
       })
       return new MonitoringAlarm()._fetchByResourceIds(resource_ids)
     }).then((resp) => {
+      // resourceのalarm flgを確認する
       return new MonitoringAlarm()._incrementCounters(resp);
     }).then((resp) => {
       // アラート
