@@ -3,10 +3,11 @@
 partition 自宅サーバー {
   (*) --> n分待機
   --> "kintoneアプリにアクセス"
-  note right : ヘッドレスブラウザーを使用。
+  note right : ヘッドレスブラウザーを使用
 }
 partition kintone {
-  "kintoneアプリにアクセス" --> "リソースのURLへの疎通確認"
+  "kintoneアプリにアクセス" --> "監視対象のURLを取得"
+  --> "URLへの疎通確認"
   --> "結果の保存"
   if "疎通結果" then
     -->[true] (*)
